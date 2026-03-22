@@ -1,3 +1,11 @@
+/*
+ * db.js
+ * 
+ * Handles the MongoDB connection using Mongoose.
+ * 
+ * This module is imported once in server.js during application startup.
+ */
+
 // Handles MongoDB connection using Mongoose
 const mongoose = require('mongoose');
 

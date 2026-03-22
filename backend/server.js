@@ -1,3 +1,9 @@
+/*
+ * server.js
+ * 
+ * Entry point for the backend API Server.
+ */
+
 // Load environment variables from .env
 require('dotenv').config();
 

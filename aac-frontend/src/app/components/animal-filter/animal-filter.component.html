@@ -1,0 +1,34 @@
+<!-- Filter panel
+  This card provides UI controls for filtering animals by type.
+  The component emits filterd results back to the dashboard.
+-->
+<div class="card p-3 shadow-sm">
+    <h5 class="mb-3">Filter Animals</h5>
+
+    <!-- Animal Type Input -->
+    <div class="mb-3">
+        <label class="form-label">Animal Type</label>
+        <input 
+            type="text" 
+            class="form-control"
+            [(ngModel)]="filterType" 
+            (keyup.enter)="applyFilter()"
+            placeholder="e.g. Dog">
+    </div>
+
+    <!-- Apply Filter Button -->
+    <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-primary w-100"
+            (click)="applyFilter()">
+            Apply Filter
+        </button>
+    </div>
+
+    <!-- Clear Filter Button -->
+    <div class="d-flex justify-content-between mt-3">
+        <button class="btn btn-primary w-100"
+            (click)="clearFilters()">
+            Clear Filters
+        </button>
+    </div>
+</div>

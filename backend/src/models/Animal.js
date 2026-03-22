@@ -1,4 +1,12 @@
-// Mongoose schema defining the structure of animal documents
+/*
+ * Animal.js
+ *
+ *  Mongoose schema defining the structure of animal documents store in MongoDB
+ * 
+ * This schema mirrors the AAC dataset fields used throughout the Application.
+ * Special Note: The schema will be utilized once Enhancement two and three are fully implemented.
+ */
+
 const mongoose = require('mongoose');
 
 const AnimalSchema = new mongoose.Schema({

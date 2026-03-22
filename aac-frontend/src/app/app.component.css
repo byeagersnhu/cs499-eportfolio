@@ -1,0 +1,22 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+ .logo {
+    height: 36px;
+    width: auto;
+ }
+
+ .footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    color: #666;
+    font-size: 0.9rem;
+    border-top: 1px sold #e0e0e0;
+ }

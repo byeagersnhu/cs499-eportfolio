@@ -1,4 +1,3 @@
-MONGO_URI="mongodb://localhost:27017/AAC"
 export const environment = {
     production: true,
     googleMapsApiKey: 'AIzaSyA8XyMUSdfl7KTsLQv-EJdayI0zMKYpf1w'

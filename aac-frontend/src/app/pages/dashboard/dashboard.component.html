@@ -1,0 +1,148 @@
+<!-- 
+  Dashboard Component Template
+
+  This template defines the main layout for the animal adoption dashboard. 
+  It includes: a filter sidebar, sorting controls, filtered or unfiltered animals list
+  pagination controls, and a map modal for viewing animal locations
+
+  The dashboard orchestrates data flow between child components and displays the correct
+  UI state based on filtering, sorting, and pagination. 
+ -->
+<div class="container mt-4">
+    <div class="row">
+        
+        <!-- Filter Sidebar -->
+        <div class="col-md-3">
+            <app-animal-filter
+                [allAnimals]="allAnimals"
+                (results)="updateResults($event)">
+            </app-animal-filter>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+
+            <!-- Sorting Controls -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <label class="me-2 fw-bold">Sort by:</label>
+                    <select class="form-select d-inline-block w-auto"
+                        [(ngModel)]="sortField"
+                        (change)="applySorting()">
+                     <option value="name">Name</option>
+                     <option value="animal_type">Type</option>
+                     <option value="breed">Breed</option>
+                    </select>
+                </div>
+
+                <!-- Sort Direction Toggle -->
+                <button class="btn btn-outline-secondary"
+                    (click)="toggleSortDirection()">
+                {{ sortDirection == 'asc' ? '^ Ascending' : 'V Descending' }}
+                </button>
+            </div>
+
+            <!-- Filtered Results -->
+            <div *ngIf="isFiltered && filteredAnimals.length > 0">
+                <h3 class="mb-3">Filtered Results</h3>
+
+                <!-- Animal List (filtered) -->
+                <app-animals-list 
+                    [animals]="paginatedFilteredAnimals"
+                    (select)="openMap($event)">
+                </app-animals-list>
+
+                <!-- Pagination Controls -->
+                <div class="d-flex justify-content-between my-3">
+                    <button class="brn brn-outline-secondary"
+                        (click)="prevPage()"
+                        [disabled]="currentPage == 1">
+                        Previous
+                    </button>
+
+                    <span class="fw-bold">Page {{ currentPage }}</span>
+
+                    <button class="btn btn-outline-secondary"
+                        (click)="nextPage()"
+                        [disabled]="isLastPage">
+                        Next
+                    </button>
+
+                    <!-- Page number Buttons -->
+                    <div class="d-flex justify-content-center gap-2 my-3" *ngIf="totalPages > 1">
+                        <button *ngFor="let page of pageNumbers"
+                            class="btn"
+                            [ngClass]="page == currentPage ? 'btn-primary' : 'btn-outline-primary'"
+                            (click)="goToPage(page)">
+                            {{ page }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unfilter Results -->
+            <div *ngIf="!isFiltered">
+                <h3 class="mt-4">All Animals</h3>
+
+                <!-- Animal List (All Animals) -->
+                <app-animals-list 
+                    [animals]="paginatedAllAnimals"
+                    (select)="openMap($event)">
+                </app-animals-list>
+
+                <!-- Pagination Controls -->
+                <div class="d-flex justify-content-between my-3">
+                    <button class="btn btn-outline-secondary"
+                        (click)="prevPage()"
+                        [disabled]="currentPage == 1">
+                        Previous
+                    </button>
+
+                    <span class="fw-bold">Page {{ currentPage }}</span>
+
+                    <button class="btn btn-outline-secondary"
+                        (click)="nextPage()"
+                        [disabled]="isLastPage">
+                        Next
+                    </button>
+                </div>
+
+                <!-- Page Number Buttons -->
+                <div class="d-flex justify-content-center gap-2 my-3" *ngIf="totalPages > 1">
+                    <button *ngFor="let page of pageNumbers"
+                        class="btn"
+                        [ngClass]="page == currentPage ? 'btn-primary' : 'btn-outline-primary'"
+                        (click)="goToPage(page)">
+                        {{ page }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- No results from filters -->
+            <div *ngIf="isFiltered && filteredAnimals.length == 0">
+                <p class="text-muted fst-italic">No results found.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Map Modal Overlay -->
+<div *ngIf="isMapOpen" class="map-modal-backdrop">
+    <div class="map-modal-container">
+
+        <!-- Close Button -->
+        <button class="close-btn"
+            (click)="closeMap()">
+            X
+        </button>
+
+        <h4 class="mb-3">Map for {{ selectedAnimal?.name || 'Unnamed' }}</h4>
+
+        <!-- Map Modal -->
+        <app-map-modal
+            *ngIf="isMapOpen && selectedAnimal"
+            [animal]="selectedAnimal"
+            (close)="closeMap()">
+        </app-map-modal>
+    </div>
+</div>
