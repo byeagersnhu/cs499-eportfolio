@@ -7,6 +7,7 @@
  */
 
 const Animal = require('../models/Animal');
+const rankAnimals = require('../services/rescueRanker');
 
 // Return all animals in the database
 exports.getAllAnimals = async (req, res) => {
@@ -37,3 +38,54 @@ exports.filterAnimals = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
+// Full search + optional rescure-type ranking
+// for Enhancement two
+exports.searchAnimals = async (req, res) => {
+    try {
+        const { query, rescueType } = req.query;
+
+        // Fetch all animals
+        let animals = await Animal.find({});
+
+        // Apply full-field search
+        const results = animals.filter(animal => matchesQuery(animal, query));
+
+        // Apply rescue-type ranking 
+        let finalResults = results;
+        if (rescueType) {
+            finalResults = rankAnimals(results, recueType);
+        }
+
+        res.json(finalResults);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server Error" });
+    }
+};
+
+function matchesQuery(animal, query) {
+    if(!query) return true;
+    const q = query.toLowerCase();
+
+    const fields = [
+        animal.age_upon_outcome_in_weeks?.toString();
+        animal.animal_id,
+        animal.animal_type,
+        animal.breed,
+        animal.color,
+        animal.date_of_birth,
+        animal.datetime,
+        animal.monthyear,
+        animal.name,
+        animal.outcome_subtype,
+        animal.sex_upon_outcome,
+        animal.location_lat?.toString(),
+        animal.location_long?.toString()
+    ];
+
+    return fields
+        .filter(Boolean)
+        .some(f => f.toLowerCase().includes(q));
+}
