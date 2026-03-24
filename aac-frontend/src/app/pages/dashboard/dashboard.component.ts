@@ -17,6 +17,7 @@ import { AnimalFilterComponent } from "../../components/animal-filter/animal-fil
 import { AnimalsListComponent } from "../../components/animals-list/animals-list.component";
 import { FormsModule } from "@angular/forms";
 import { MapModalComponent } from "../../map-modal/map-modal.component";
+import { RescueResult } from "../../models/rescue-result";
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +25,7 @@ import { MapModalComponent } from "../../map-modal/map-modal.component";
   imports: [
     CommonModule,
     FormsModule,
-    AnimalFilterComponent,
+    // AnimalFilterComponent,    can be added later. 
     AnimalsListComponent,
     MapModalComponent
   ],
@@ -52,6 +53,10 @@ export class DashboardComponent implements OnInit {
   // Map modal state
   selectedAnimal: Animal | null = null;
   isMapOpen: boolean = false;
+
+  // Search for subset of animals
+  searchResults: (Animal | RescueResult)[] =[];
+  isSearching: boolean = false;
 
 
   constructor(private animalService: AnimalService) {}
@@ -119,23 +124,40 @@ export class DashboardComponent implements OnInit {
       return this.filteredAnimals.slice(start, start + this.pageSize);
     }
 
+    // Returns the current page of searched animals.
+    get paginatedSearchResults(): (Animal | RescueResult)[] {
+      const start = (this.currentPage -1) * this.pageSize;
+      return this.searchResults.slice(start, start + this.pageSize)
+    }
+
     // Determines whether the user is on the last page of results. 
     get isLastPage(): boolean {
-      const totalItems = this.filteredAnimals.length > 0
-        ? this.filteredAnimals.length
-        : this.allAnimals.length;
+      let activeList: (Animal | RescueResult)[];
 
-      const lastItemIndex = this.currentPage * this.pageSize;
-      return lastItemIndex >= totalItems;
+      if(this.searchResults.length > 0) {
+        activeList = this.searchResults;
+      } else if (this.filteredAnimals.length > 0) {
+        activeList = this.filteredAnimals;
+      } else {
+        activeList = this.allAnimals;
+      }
+
+      return this.currentPage * this.pageSize >= activeList.length;
     }
 
     // Calculates the total number of pages based on active dataset. 
     get totalPages(): number { 
-      const totalItems = this.filteredAnimals.length > 0
-        ? this.filteredAnimals.length
-        : this.allAnimals.length;
+      let activeList: (Animal | RescueResult)[];
 
-      return Math.ceil(totalItems / this.pageSize);
+      if (this.searchResults.length > 0) {
+        activeList = this.searchResults;
+      } else if (this.filteredAnimals.length > 0) {
+        activeList = this.filteredAnimals;
+      } else {
+        activeList = this.allAnimals;
+      }
+
+      return Math.ceil(activeList.length / this.pageSize);
     }
 
     // Generates an array of page numbers for pagination controls
@@ -163,15 +185,60 @@ export class DashboardComponent implements OnInit {
     }
 
     // Opens the map modal for the selected animal. 
-    openMap(animal: Animal): void {
+    openMap(animal: Animal | RescueResult): void {
+      if (!('location_lat' in animal)) return;   // exit if results have no map data. 
       this.selectedAnimal = animal;
       this.isMapOpen = true;
-      console.log('Selected animal for map:', animal);
     }
 
     // Closes the map modal and clears the selected animal. 
     closeMap(): void {
       this.isMapOpen = false;
       this.selectedAnimal = null; 
+    }
+
+    // Search method
+    onSearch(query: string): void {
+      if (!query.trim()) {
+        this.searchResults = [];
+        this.currentPage = 1;
+        return;
+      }
+
+      // Detect rescue type keywords
+      const rescueKeywords = ['water', 'mountain', 'disaster']
+      const rescueType = rescueKeywords.includes(query.toLowerCase())
+        ? query.toLowerCase()
+        : undefined;
+
+      this.isSearching = true;
+
+      this.animalService.searchAnimals(query, rescueType).subscribe({
+        next: (results) => {
+
+          // RescueType used disable sort and hide low-scoring animals
+          if (rescueType) {
+            const threshold = 50;    // minimum score to appear.
+            this.searchResults = results.filter(a => a.score >= threshold);
+          }
+          // Normal search used apply sort. 
+          else {
+            this.searchResults = this.sortAnimals(results);
+          }
+          this.isSearching = false;
+          this.currentPage = 1;
+          this.filteredAnimals = [];  // Disable filters during search
+          this.isFiltered = false;
+        },
+        error: (err) => {
+          console.error('Search error: ', err);
+          this.isSearching = false;
+        }
+      });
+    }
+
+    clearSearch(): void {
+      this.searchResults = [];
+      this.currentPage = 1;
     }
 }

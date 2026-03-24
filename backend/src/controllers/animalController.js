@@ -2,90 +2,65 @@
  * animalController.js
  * 
  * Controller functions for handling animal-related API requests.
- * 
+ * Enhancement One: getAllAnimals, filterAnimals
+ * Enhancement Two: searchAnimals (fuzzy serach + ranking)
  * This controller is used by animalRoutes.js to define API endpoints.
  */
 
 const Animal = require('../models/Animal');
 const rankAnimals = require('../services/rescueRanker');
+const searchAnimal = require('../services/searchAnimal');
 
-// Return all animals in the database
+// Return all animals
 exports.getAllAnimals = async (req, res) => {
     try {
         const animals = await Animal.find({});
-        res.json(animals);
-    } catch (error) {
-        res.status(500).json({ error: "Server error"});
-    }
-};
-
-/* Return animals matching filter criteria from the request body
- * Currently supports case-insensitive filtering by animal_type.
- *
- * Enhancement two will expand this filtering to include more types. 
- */
-
-exports.filterAnimals = async (req, res) => {
-    try {
-        const query = req.body;   // Dynamic filtering based on provided fields
-        
-        // Case-insensitive match on animal_type.
-        const animals = await Animal.find({
-            animal_type: { $regex: new RegExp(query.animal_type, 'i') }
-        });
         res.json(animals);
     } catch (error) {
         res.status(500).json({ error: "Server error" });
     }
 };
 
-// Full search + optional rescure-type ranking
-// for Enhancement two
+// Filter animals by criteria
+exports.filterAnimals = async (req, res) => {
+    try {
+        const query = req.body;
+
+        const animals = await Animal.find({
+            animal_type: { $regex: new RegExp(query.animal_type, 'i') }
+        });
+
+        res.json(animals);
+    } catch (error) {
+        res.status(500).json({ error: "Server error"});
+    }
+};
+
+// Fuzzy search + rescue_type ranking
 exports.searchAnimals = async (req, res) => {
     try {
         const { query, rescueType } = req.query;
 
-        // Fetch all animals
-        let animals = await Animal.find({});
-
-        // Apply full-field search
-        const results = animals.filter(animal => matchesQuery(animal, query));
-
-        // Apply rescue-type ranking 
-        let finalResults = results;
+        // RescueType search. Ignores fuzzy search, rank All animals
         if (rescueType) {
-            finalResults = rankAnimals(results, recueType);
+            const allAnimals = await Animal.find({});
+            const scored = rankAnimals(allAnimals, rescueType);
+
+            // Flatten the structure so frontend gets;
+            // { name, breed, animal_type, score }
+            const flattened = scored.map(entry => ({
+                ...entry.animal.toObject(),
+                score: entry.score
+            }));
+            
+            return res.json(flattened);
         }
 
-        res.json(finalResults);
-
+        // Normal fuzzy search
+        const animals = await searchAnimal(query);
+        return res.json(animals);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Server Error" });
     }
 };
-
-function matchesQuery(animal, query) {
-    if(!query) return true;
-    const q = query.toLowerCase();
-
-    const fields = [
-        animal.age_upon_outcome_in_weeks?.toString();
-        animal.animal_id,
-        animal.animal_type,
-        animal.breed,
-        animal.color,
-        animal.date_of_birth,
-        animal.datetime,
-        animal.monthyear,
-        animal.name,
-        animal.outcome_subtype,
-        animal.sex_upon_outcome,
-        animal.location_lat?.toString(),
-        animal.location_long?.toString()
-    ];
-
-    return fields
-        .filter(Boolean)
-        .some(f => f.toLowerCase().includes(q));
-}

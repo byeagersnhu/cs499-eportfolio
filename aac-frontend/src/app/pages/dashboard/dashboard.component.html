@@ -11,12 +11,27 @@
 <div class="container mt-4">
     <div class="row">
         
-        <!-- Filter Sidebar -->
+        <!-- Search Sidebar -->
         <div class="col-md-3">
-            <app-animal-filter
-                [allAnimals]="allAnimals"
-                (results)="updateResults($event)">
-            </app-animal-filter>
+            <div class="search-container mb-3">
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Search animals..."
+                    #searchBox
+                    (keyup.enter)="onSearch(searchBox.value)"
+                />
+            </div>
+
+            <button class="btn btn-primary w-100"
+                (click)="onSearch(searchBox.value)">
+            Search
+            </button>
+
+            <button class="btn btn-secondary w-100"
+                (click)="clearSearch()">
+            Clear Search
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -42,13 +57,13 @@
                 </button>
             </div>
 
-            <!-- Filtered Results -->
-            <div *ngIf="isFiltered && filteredAnimals.length > 0">
-                <h3 class="mb-3">Filtered Results</h3>
+            <!-- Search Results -->
+            <div *ngIf="searchResults.length > 0">
+                <h3 class="mb-3">Search Results</h3>
 
-                <!-- Animal List (filtered) -->
+                <!-- Animal List (searched) -->
                 <app-animals-list 
-                    [animals]="paginatedFilteredAnimals"
+                    [animals]="paginatedSearchResults"
                     (select)="openMap($event)">
                 </app-animals-list>
 
@@ -81,7 +96,7 @@
             </div>
 
             <!-- Unfilter Results -->
-            <div *ngIf="!isFiltered">
+            <div *ngIf="searchResults.length == 0">
                 <h3 class="mt-4">All Animals</h3>
 
                 <!-- Animal List (All Animals) -->

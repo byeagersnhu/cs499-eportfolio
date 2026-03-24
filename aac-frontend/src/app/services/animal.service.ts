@@ -34,4 +34,12 @@ export class AnimalService {
   filterAnimals(criteria: any): Observable<Animal[]> {
     return this.http.post<Animal[]>(`${this.apiUrl}/filter`, criteria);
   }
+
+  searchAnimals(query: string, rescueType ?: string) {
+    const params: any = { query };
+    if (rescueType) params.rescueType = rescueType;
+
+    return this.http.get<any[]>(`${this.apiUrl}/search`, { params });
+  }
+
 }

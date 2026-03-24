@@ -8,18 +8,18 @@
 
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/animalController');
+const animalController = require('../controllers/animalController');
 
 // GET all animals
 // Returns all animals in the database
-router.get('/', controller.getAllAnimals);
+router.get('/', animalController.getAllAnimals);
 
 // Get searched animals
 // Full field search with optional rescue-type ranking
-router.get('/search', animalController.serachAnimals);
+router.get('/search', animalController.searchAnimals);
 
 // POST filtered animals based on request body criteria
 // Returns all animals filtered by criteria in the request body.
-router.post('/filter', controller.filterAnimals);
+router.post('/filter', animalController.filterAnimals);
 
 module.exports = router;

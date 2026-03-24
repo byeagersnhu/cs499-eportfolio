@@ -10,6 +10,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Animal } from "../../models/animal";
+import { RescueResult } from "../../models/rescue-result";
 
 
 @Component({
@@ -22,17 +23,18 @@ import { Animal } from "../../models/animal";
 export class AnimalsListComponent {
   
   // Array of animals to display
-  @Input() animals: Animal[] = [];
+  @Input() animals: (Animal | RescueResult)[] = [];
   
   // Loading state for showing a spinner 
   @Input() loading: boolean = false;
 
   // Emits the selected animal when a card is clicked
-  @Output() select = new EventEmitter<Animal>();
+  @Output() select = new EventEmitter<Animal | RescueResult>();
 
   // Handles click events on an animal card. 
   // Parameter animal - the animal that was clicked. 
-  onCardClick(animal: Animal): void {
+  onCardClick(animal: Animal | RescueResult): void {
+    if (!('location_lat' in animal)) return;
     this.select.emit(animal);
   }
 }

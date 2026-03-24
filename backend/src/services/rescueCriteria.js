@@ -1,15 +1,17 @@
 /*
  * RescueCriteria.js
  *
- * This defines the criteria the perfered breeds, sex, and age of dogs for each rescue type. 
+ * This module defines the criteria for the perfered breeds, sex, and age of dogs for each rescue type. 
  */
 
-const rescureCriteria = {
+const rescueCriteria = {
     water: {
-        preferedBreeds: [
+        preferredBreeds: [
             "Labrador Retriever Mix",
+            "Labrador Retriever",
             "Chesapeake Bay Retriever",
-            "Newfoundland"
+            "Newfoundland",
+            "Golden Retriever Mix"
         ],
         preferredSex: "Intact Female",
         minAgeWeeks: 26,
@@ -17,11 +19,14 @@ const rescureCriteria = {
     },
 
     mountain: {
-        preferedBreeds: [
+        preferredBreeds: [
             "German Shepherd",
+            "German Shepherd Mix",
             "Alaskan Malamute",
             "Old English Sheepdog",
             "Siberian Husky",
+            "Husky",
+            "Husky Mix",
             "Rottweiler"
         ],
         preferredSex: "Intact Male",
@@ -30,12 +35,16 @@ const rescureCriteria = {
     },
 
     disaster: {
-        preferedBreeds: [
+        preferredBreeds: [
             "Doberman Pinscher",
+            "German Shepherd",
             "German Shepherd",
             "Golden Retriever",
             "Bloodhound",
-            "Rottweiler"
+            "Rottweiler",
+            "Border Collie",
+            "Australian Shepherd",
+            "Australian Cattle Dog"
         ],
         preferredSex: "Intact Male",
         minAgeWeeks: 26,
@@ -43,4 +52,4 @@ const rescureCriteria = {
     }
 };
 
-modlue.exports = rescureCriteria;
+module.exports = rescueCriteria;
