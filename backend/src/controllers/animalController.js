@@ -1,66 +1,81 @@
 /*
  * animalController.js
  * 
- * Controller functions for handling animal-related API requests.
- * Enhancement One: getAllAnimals, filterAnimals
- * Enhancement Two: searchAnimals (fuzzy serach + ranking)
- * This controller is used by animalRoutes.js to define API endpoints.
+ * Handles all animal-related API endpoints
+ * 
+ * This controller delegates scoring logic to attachRescueTypes
+ * and keeps endpoint logic clean and maintainable.
  */
 
 const Animal = require('../models/Animal');
-const rankAnimals = require('../services/rescueRanker');
+const { rankAnimals, getApplicableRescueTypes } = require('../services/rescueRanker');
 const searchAnimal = require('../services/searchAnimal');
+const rescueCriteria = require('../services/rescueCriteria');
+const attachRescueTypes = require('../services/attachRescueTypes');
 
-// Return all animals
+
+// GET all animals
 exports.getAllAnimals = async (req, res) => {
     try {
         const animals = await Animal.find({});
-        res.json(animals);
+        const enriched = attachRescueTypes(animals);
+        res.json(enriched);
     } catch (error) {
+        console.error("Error in getAllAnimals: ", error);
         res.status(500).json({ error: "Server error" });
     }
 };
 
-// Filter animals by criteria
-exports.filterAnimals = async (req, res) => {
-    try {
-        const query = req.body;
-
-        const animals = await Animal.find({
-            animal_type: { $regex: new RegExp(query.animal_type, 'i') }
-        });
-
-        res.json(animals);
-    } catch (error) {
-        res.status(500).json({ error: "Server error"});
-    }
-};
-
-// Fuzzy search + rescue_type ranking
+// SEARCH Fuzzy search + rescue_type ranking
 exports.searchAnimals = async (req, res) => {
     try {
-        const { query, rescueType } = req.query;
+        const q = (req.query.q || "").trim();
+        const rescueType = (req.query.rescueType || "").trim();
 
         // RescueType search. Ignores fuzzy search, rank All animals
-        if (rescueType) {
-            const allAnimals = await Animal.find({});
-            const scored = rankAnimals(allAnimals, rescueType);
+        if (rescueType || ["water", "mountain", "disaster"].includes(q.toLowerCase())) {
+            const type = rescueType || q.toLowerCase();
 
-            // Flatten the structure so frontend gets;
-            // { name, breed, animal_type, score }
-            const flattened = scored.map(entry => ({
-                ...entry.animal.toObject(),
-                score: entry.score
-            }));
+            const animals = await Animal.find({});
+            const scored = rankAnimals(animals, type);
+
+            // Flatten ranked results and attach rescueTypes
+            const flattened = scored.map(entry => {
+                const animalObj = entry.animal.toObject ? entry.animal.toObject() : entry.animal;
+                return {
+                    ...animalObj,
+                    score: entry.score
+                };
+            });
             
-            return res.json(flattened);
+            const enriched = attachRescueTypes(flattened);
+            return res.json(enriched);
         }
 
         // Normal fuzzy search
-        const animals = await searchAnimal(query);
-        return res.json(animals);
+        if (q.length > 0) {
+            const regex = new RegExp(`^${q}`, "i");
+
+            const animals = await Animal.find({
+                $or: [
+                    { name: regex },
+                    { breed: regex },
+                    { animal_type: regex },
+                    { sex_upon_outcome: regex }
+                ]
+            });
+
+            const enriched = attachRescueTypes(animals);
+            return res.json(enriched);
+        }
+
+        // No search, return all animals
+        const animals = await Animal.find({});
+        const enriched = attachRescueTypes(animals);
+        res.json(enriched);
+
     } catch (error) {
-        console.error(error);
+        console.error("Error in searchAnimals: ", error);
         res.status(500).json({ error: "Server Error" });
     }
 };

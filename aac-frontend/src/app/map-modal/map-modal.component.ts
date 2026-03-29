@@ -19,10 +19,13 @@ import { Animal } from '../models/animal';
 })
 
 export class MapModalComponent {
-    
+    // Input
+
     // This animal whose location will be displayed on the map
     @Input() animal !: Animal;
 
+    // Output
+    
     // Emits when the user closes the modal
     @Output() close = new EventEmitter<void>();
 

@@ -18,8 +18,4 @@ router.get('/', animalController.getAllAnimals);
 // Full field search with optional rescue-type ranking
 router.get('/search', animalController.searchAnimals);
 
-// POST filtered animals based on request body criteria
-// Returns all animals filtered by criteria in the request body.
-router.post('/filter', animalController.filterAnimals);
-
 module.exports = router;

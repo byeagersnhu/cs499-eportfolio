@@ -1,34 +1,35 @@
-<!-- Modal Backdrop 
-  Clicking the backdrop closes the modal.  This creates the expected 
-  "click outside to dismiss" behavior. 
+<!-- 
+    Map Modal Template
+
+    Displays a modal overlay containing a Google Map centered
+    on the selected animal's location.
+
+
+    This template focuses on layout and presentation.
 -->
-<div class="map-modal-backdrop"
-    (click)="close.emit()">
-</div>
+<!-- Modal Backdrop -->
+<div class="map-modal-backdrop" (click)="close.emit()"></div>
 
 <!-- Modal Container -->
 <div class="map-modal-container">
 
     <!-- Close Button -->
-    <button class="close-btn"
-        (click)="close.emit()">
-        X
-    </button>
+    <button class="close-btn" (click)="close.emit()">x</button>
 
-    <!-- Modal Title -->
-    <h4 class="mb-3">Map for {{ animal?.name }}</h4>
+    <!-- Modal Header -->
+    <h4 class="mb-3">
+        Map for {{ animal.name }}
+    </h4>
 
-    <!-- Google Map 
-      Displays a map centered on the selected animal's coordinates.
-      The marker uses the same computed center value.  
-    -->
+    <!-- Google Map -->
     <google-map
         height="400px"
         width="100%"
         [center]="center"
         [options]="mapOptions">
 
+        <!-- Marker at the animal's location -->
         <map-marker [position]="center"></map-marker>
-
     </google-map>
+
 </div>

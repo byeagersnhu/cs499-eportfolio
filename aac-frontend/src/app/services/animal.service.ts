@@ -1,9 +1,12 @@
 /*
  * Animal Service
  * 
- * This service acts as the communication layer between the Angular frontend.
- * and the Express/MongoDB backend. It provides methods for retrieving all 
- * animals and filtering animals based on user-defined criteria.
+ * Centralized service responsible for all communication
+ * between the Angular frontend and the backend API
+ * 
+ * 
+ * This service contain No UI logic. it simply exposes
+ * clean, reusable methods for components to consume.
  **/
 
 import { Injectable } from "@angular/core";
@@ -22,24 +25,26 @@ export class AnimalService {
 
   constructor(private http: HttpClient) {}
 
-  // Retrieves the full list of animals from the backend.
+  // Fetches the full data set of animals from the backend
   // Returns observable<Animal[]> async stream of animal data.
   getAllAnimals(): Observable<Animal[]> {
     return this.http.get<Animal[]>(this.apiUrl);
   }
 
-  // Sends filter criteria to the backend and retrns matching animals.
-  // Parameter criteria - object containing filter fields.
-  // Returns Observable<Animal[]> -filtered results. 
-  filterAnimals(criteria: any): Observable<Animal[]> {
-    return this.http.post<Animal[]>(`${this.apiUrl}/filter`, criteria);
-  }
-
+  // Performs a fuzzy search on name, breed, or animal_type
+  // Parameter term - search string
   searchAnimals(query: string, rescueType ?: string) {
-    const params: any = { query };
+    const params: any = { q: query };
     if (rescueType) params.rescueType = rescueType;
 
     return this.http.get<any[]>(`${this.apiUrl}/search`, { params });
   }
 
+  // Retrieves animals ranked by a specific rescueType.
+  // Used when the user explicitly selects a rescue category.
+  // parameter rescueType - "water" | "mountian" | "disaster"
+  // No longer used, candidate for deletion. 
+  searchByRescueType(rescueType: string): Observable<Animal[]> {
+    return this.http.get<Animal[]>(`${this.apiUrl}/search?rescueType=${rescueType}`);
+  }
 }

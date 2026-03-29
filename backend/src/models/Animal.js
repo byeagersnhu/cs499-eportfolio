@@ -27,4 +27,4 @@ const AnimalSchema = new mongoose.Schema({
 }, {collection: "animals"});
 
 // Export the model for use in controllers and routes
-module.exports = mongoose.model("Animals", AnimalSchema);
+module.exports = mongoose.model("Animal", AnimalSchema);

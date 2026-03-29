@@ -1,36 +1,59 @@
+/* Modal Backdrop */
 .map-modal-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 9998;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 900;
+    animation: fadeIn 0.2s ease-out;
 }
 
+/* Modal Container */
 .map-modal-container {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 700px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    z-index: 9999;
+    width: 650px;
+    max-width: 90%;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    animation: scaleIn 0.2s ease-out forwards;
 }
 
+/* Close Button */
 .close-btn {
     position: absolute;
-    top: 8px;
-    right: 12px;
-    z-index: 9999;
-    border: none;
+    top: 10px;
+    right: 14px;
     background: transparent;
-    font-size: 1.5rem;
+    border: none;
+    font-size: 1.8rem;
     cursor: pointer;
+    color: #444;
+    transition: colro 0.2s ease, transform 0.15s ease;
 }
 
-google-map {
-    border-radius: 6px;
-    overflow: hidden;
+.close-btn:hover {
+    color: #000;
+    transform: scale(1.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+       }
 }

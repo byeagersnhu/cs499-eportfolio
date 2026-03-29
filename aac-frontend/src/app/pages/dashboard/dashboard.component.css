@@ -1,0 +1,25 @@
+/* Layout */
+.contianer {
+    max-width: 1200px;
+}
+
+.row {
+    margin-bottom: 1rem;
+}
+
+/* Pagination */
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+.pagination .page-link {
+    cursor: pointer;
+}
+
+.pagination .page-item.disabled .page-link {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+

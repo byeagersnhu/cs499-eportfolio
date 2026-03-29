@@ -1,0 +1,19 @@
+<!--
+    Search Bar Template
+-->
+
+<div class="search-container">
+
+    <!-- User Search Input -->
+    <input 
+        type="text"
+        [(ngModel)]="term"
+        (keyup.enter)="onInput()"
+        placeholder="Search animals..."
+        class="search-input"
+    />
+
+    <!-- Clear search button -->
+    <button class="clear-btn" (click)="clear()">Clear Search</button>
+
+</div>

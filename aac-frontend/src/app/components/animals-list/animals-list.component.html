@@ -1,20 +1,41 @@
-<!-- Loading Spinner
-  Displayed while data is being fetched or processed.
-  -->
+<!-- 
+    Animals List Template
+
+    Template responsible for rendering a grid of animal cards.
+    All data is handled by the DashboardComponent.
+    
+-->
+
+<!-- Loading Indicator -->
 <div *ngIf="loading" class="text-center py-4">
     <div class="spinner-border text-primary"></div>
 </div>
 
-<!-- Animal List -->
+<!-- Animal Card Grid -->
 <div *ngIf="!loading" class="row mt-3">
-   
-     <!-- Animal Cards -->
+    <!-- One card per animal -->
     <div class="col-md-4 mb-3" *ngFor="let animal of animals">
-        <div class="card p-3 shadow-sm"
-            (click)="onCardClick(animal)">
-            <h5>{{ animal.name }}</h5>
-            <p><strong>Type: </strong> {{ animal.animal_type }}</p>
-            <p><strong>Breed: </strong> {{ animal.breed }}</p>
+        <div class="card p-3 shadow-sm" (click)="onCardClick(animal)">
+
+            <!-- Animal Name -->
+            <h5>{{ animal.name }} </h5>
+
+            <!-- Basic Details -->
+            <p><strong>Type: </strong>{{ animal.animal_type }}</p>
+            <p><strong>Breed: </strong>{{ animal.breed }}</p>
+            <p><strong>Sex: </strong>{{ animal.sex_upon_outcome }}</p>
+
+            <!-- Rescue Types -->
+            <div class="mt-2">
+                <strong>Rescue Type(s): </strong>
+
+                <ng-container *ngFor="let type of animal.rescueTypes">
+                    <span class="badge bd-info text-dark me-1">
+                        {{ type | titlecase }}
+                    </span>
+                </ng-container>
+            </div>
         </div>
     </div>
+
 </div>

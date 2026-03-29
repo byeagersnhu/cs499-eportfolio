@@ -1,0 +1,35 @@
+/* Card Layout */
+.card {
+    border-radius: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15 ease;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+}
+
+/* Card Title */
+.card h5 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Rescue Type Badges */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Badge Space */
+.badge + .badge {
+    margin-left: 0.25rem;
+}
+
+/* Responsive Spacing */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+}
